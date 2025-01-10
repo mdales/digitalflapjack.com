@@ -5,20 +5,14 @@
   (run dream_eml %{deps} --workspace %{workspace_root})))
 
 (rule
- (targets photos.ml)
- (deps photos.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
  (targets posts.ml)
  (deps posts.eml.ml)
  (action
   (run dream_eml %{deps} --workspace %{workspace_root})))
 
 (rule
- (targets snapshots.ml)
- (deps snapshots.eml.ml)
+ (targets projects.ml)
+ (deps projects.eml.ml)
  (action
   (run dream_eml %{deps} --workspace %{workspace_root})))
 
@@ -29,7 +23,7 @@
   (run dream_eml %{deps} --workspace %{workspace_root})))
 
 (executable
- (public_name mynameismwd)
+ (public_name digitalflapjack)
  (name main)
  (libraries webplats dream fpath)
  (preprocess

@@ -11,51 +11,61 @@ let render_index site =
   <%s! Render.render_head ~site () %>
   <body>
     <div class="almostall">
-      <%s! Renderer.render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
-      
-      <div id="container">
-        <div class="content">
-          <section role="main">
-            <div class="article">
-              <h2>My things here</h2>
-                <div class="index">
-% (Site.sections site) |> List.filter (fun s -> not (Section.synthetic s)) |> List.iter begin fun (sec) ->
-                  <div>
-                    <a href="<%s Section.url sec %>">
-                      <div class="homebutton colour-<%s Section.title sec %>">
-                        <h3><%s Section.title sec %></h3>
-                        <p>
-                          <%d List.length (Section.pages sec) %> <%s Section.title sec %>,
-                          last updated <%s ptime_to_str (Page.date (List.hd (Section.pages sec))) %></p>
-                      </div>
-                    </a>
-                  </div>
+        <div class="greenbar" id="topbar"></div>
+        <div class="page">
+          <%s! Renderer.render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
+          <div class="content">
+            <div class="index">
+
+% (Site.sections site) |> List.filter (fun s -> "blog" = (Section.title s)) |> List.iter begin fun (sec) ->
+              <div class="article index-<%s Section.title sec %>">
+                <article>
+                    <h3><a href="<%s Section.url sec %>">Recent posts</a></h3>
+                    <ul>
+% (List.iter (fun page ->
+                      <li>
+                        <div class="summarylistitem">
+                            <div>
+                                <a href="<%s Section.url ~page sec %>"
+                                    ><span class="itemtitle"><%s Page.title page %></span
+                                    ><br />
+                                    <div class="synopsis">
+% (match (Page.synopsis page) with Some prose ->
+                                        <%s prose %>
+% | None -> ());
+                                    </div></a
+                                >
+                            </div>
+                            <div>
+% (match (Page.titleimage page) with Some img ->
+% let _, ext = Fpath.split_ext (Fpath.v img.filename) in
+% (match ext with ".svg" ->
+                              <div class="indexicon"
+                                style="background-image: url('<%s Section.url ~page sec %>thumbnail.svg');"
+                              ></div>
+% | _ -> (
+                              <img
+                                src="<%s Section.url ~page sec %>thumbnail.jpg"
+                                srcset="<%s Section.url ~page sec %>thumbnail@2x.jpg 2x, <%s Section.url ~page sec %>thumbnail.jpg 1x"
+                              />
+% ));
+% | None -> ());
+                            </div>
+                        </div>
+                      </li>
+% ) (Section.pages sec));
+                      <li class="indexmore"><a href="<%s Section.url sec %>">See more...</a></li>
+                    </ul>
+                </article>
+              </div>
 % end;
-                </div>
-              <h2>My other sites</h2>
-                  <div class="index">
-                      <div>
-                          <a href="https://mwdales-guitars.uk/">
-                              <div class="homebutton colour-EF">
-                                  <h3>M. W. Dales Guitars</h3>
-                                  <p>Guitar building, designing, 3D-printing, laser-cutting</p>
-                              </div>
-                          </a>
-                      </div>
-                      <div>
-                          <a href="https://digitalflapjack.com/">
-                              <div class="homebutton colour-DF">
-                                  <h3>Digital Flapjack</h3>
-                                  <p>Programming mostly, with a bit of design and planning too</p>
-                              </div>
-                          </a>
-                      </div>
-                  </div>
             </div>
-          </section>
+          </div>
         </div>
       </div>  
-    <%s! Renderer.render_footer () %>    
+      <div class="greenbar" id="bottombar">
+        <span>Digital Flapjack Ltd, UK Company 06788544</span>
+      </div>
     </div>
   </body>
   </html>

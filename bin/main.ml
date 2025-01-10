@@ -14,32 +14,27 @@ let snapshot_image_loader page image bounds _root _path _request =
 
 let general_thumbnail_loader ~retina page =
   match Page.original_section_title page with
-  | "photos" ->
-      let i = Option.get (Page.titleimage page) in
-      snapshot_image_loader page i.filename
-        (if retina then (1280, 700) else (640, 350))
-  | _ -> thumbnail_loader page (if retina then 600 else 300)
+  | "projects" ->
+      let i = Option.get (Page.get_key_as_string page "icon") in
+      snapshot_image_loader page i
+        (if retina then (256, 256) else (128, 128))
+  | _ -> thumbnail_loader page (if retina then 400 else 200)
 
 let section_render sec =
   match Section.title sec with
-  | "posts" -> Posts.render_section
-  | "photos" -> Photos.render_section
-  | _ -> Snapshots.render_section
+  | "projects" -> Projects.render_section
+  | _ -> Posts.render_section
 
 let taxonomy_section_renderer taxonomy _sec =
   match Taxonomy.title taxonomy with
-  | "albums" -> Photos.render_section
-  | _ -> Snapshots.render_section
+  | _ -> Posts.render_section
   
 let taxonomy_renderer taxonomy =
   match Taxonomy.title taxonomy with
-  | "albums" -> Photos.render_taxonomy
   | _ -> Renderer.render_taxonomy
 
 let page_render page =
   match Page.original_section_title page with
-  | "photos" -> Photos.render_page
-  | "sounds" | "snapshots" -> Snapshots.render_page
   | _ -> Renderer.render_page
 
 let () =

@@ -1,13 +1,24 @@
 open Webplats
 
-let render_header url title = 
-  <div class="header stripes">
-    <header role="banner">
-      <a ref="home">
-        <h1><a href="/">my name is mwd</a></h1>
-        <h2>the <a href="<%s url %>"><%s title %></a> of Michael Winston Dales</h2>
-      </a>
-    </header>
+let render_header _url _title =
+  <div id="header">
+    <div>
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+    </div>
+    <div>
+        <nav>
+            <ul id="headernav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/projects/">Projects</a></li>
+                <li><a href="/publications/">Papers</a></li>
+                <li><a href="/search/">Search</a></li>
+                <li><a href="/about/">About</a></li>
+            </ul>
+        </nav>
+    </div>
   </div>
   
 let months = [| "Jan" ; "Feb" ; "Mar" ; "Apr" ; "May" ; "Jun" ; "Jul" ; "Aug" ; "Sept" ; "Oct" ; "Nov"; "Dec" |]
@@ -126,47 +137,52 @@ let render_page site sec previous_page page next_page =
   <%s! (Render.render_head ~site ~sec ~page ()) %>
   <body>
     <div class="almostall">
-      <%s! render_header (Section.url sec) (Section.title sec) %>
-      <div id="container">
-        <div class="content">
-          <section role="main">
-            <div class="article">
-              <article>
-                <div class="headerflex">
-                  <div class="headerflextitle">
-                    <h3><%s Page.title page %></h3>
+      <div class="greenbar" id="topbar"></div>
+      <div class="page">
+        <%s! render_header (Section.url sec) (Section.title sec) %>
+        <div id="container">
+          <div class="content">
+            <section role="main">
+              <div class="article">
+                <article>
+                  <div class="headerflex">
+                    <div class="headerflextitle">
+                      <h3><%s Page.title page %></h3>
+                    </div>
+                    <div class="headerflexmeta">
+                      <p><%s ptime_to_str (Page.date page) %></p>
+                    </div>
                   </div>
-                  <div class="headerflexmeta">
-                    <p><%s ptime_to_str (Page.date page) %></p>
-                  </div>
-                </div>
-                <%s! Render.render_body page %>
-                
-                <div class="postscript">
-                  <ul>
-% (match previous_page with Some page -> 
-                    <li><strong>Next</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
+                  <%s! Render.render_body page %>
+
+                  <div class="postscript">
+                    <ul>
+% (match previous_page with Some page ->
+                      <li><strong>Next</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
 % | None -> ());
-% (match next_page with Some page -> 
-                    <li><strong>Previous</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
+% (match next_page with Some page ->
+                      <li><strong>Previous</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
 % | None -> ());
 % (match (Page.tags page) with [] -> () | tags ->
 % let count = (List.length tags) - 1 in
-                    <li><strong>Tags</strong>:
+                      <li><strong>Tags</strong>:
 % (List.iteri (fun i tag ->
 % let term_for_url = String.map (fun c -> match c with ' ' -> '-' | x -> x) tag in
 % let seperator = if (i < count) then "," else "" in
-                    <a href="/tags/<%s term_for_url %>/"><%s tag %></a><%s seperator %>
+                      <a href="/tags/<%s term_for_url %>/"><%s tag %></a><%s seperator %>
 % ) tags));
-                  </ul>
-                </div>
-                
-              </article>
-            </div>
-          </section>
+                    </ul>
+                  </div>
+
+                </article>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
-      <%s! render_footer () %>   
+      <div class="greenbar" id="bottombar">
+        <span>Digital Flapjack Ltd, UK Company 06788544</span>
+      </div>
     </div>
   </body>
   </html>
