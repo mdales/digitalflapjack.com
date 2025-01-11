@@ -23,6 +23,7 @@ let general_thumbnail_loader ~retina page =
 let section_render sec =
   match Section.title sec with
   | "projects" -> Projects.render_section
+  | "publications" -> Publications.render_section
   | _ -> Posts.render_section
 
 let taxonomy_section_renderer taxonomy _sec =
