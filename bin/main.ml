@@ -37,6 +37,7 @@ let taxonomy_renderer taxonomy =
 let page_render page =
   match Page.original_section_title page with
   | "blog" -> Posts.render_page
+  | "root" -> About.render_page
   | _ -> Renderer.render_page
 
 let () =
