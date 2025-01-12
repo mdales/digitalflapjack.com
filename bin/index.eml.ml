@@ -62,10 +62,10 @@ let render_index site =
             </div>
           </div>
         </div>
+        <div class="greenbar" id="bottombar">
+          <span>Digital Flapjack Ltd, UK Company 06788544</span>
+        </div>
       </div>  
-      <div class="greenbar" id="bottombar">
-        <span>Digital Flapjack Ltd, UK Company 06788544</span>
-      </div>
     </div>
   </body>
   </html>
