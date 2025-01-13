@@ -84,7 +84,7 @@ let render_page site sec previous_page page next_page =
                   <span></span>
 % ));
 % (match next_page with Some page ->
-                  <a href="<%s Section.url ~page sec %>"><%s Page.title page %>} &#10095;</a>
+                  <a href="<%s Section.url ~page sec %>"><%s Page.title page %> &#10095;</a>
 % | None -> ());
                 </div>
               </div>

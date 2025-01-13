@@ -196,6 +196,8 @@ let render_taxonomy site taxonomy =
   <%s! (Render.render_head ~site ()) %>
   <body>
     <div class="almostall">
+    <div class="greenbar" id="topbar"></div>
+    <div class="page">
       <%s! render_header (Taxonomy.url taxonomy) (Taxonomy.title taxonomy) %>
     
     <ul>
@@ -209,6 +211,10 @@ let render_taxonomy site taxonomy =
     
     </ul>
     
-    <%s! render_footer () %>
+    </div>
+    <div class="greenbar" id="bottombar">
+      <span>Digital Flapjack Ltd, UK Company 06788544</span>
+    </div>
+  </div>
   </body>
   </html>
