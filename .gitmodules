@@ -1,0 +1,3 @@
+[submodule "vendor/webplats"]
+	path = vendor/webplats
+	url = git@github.com:mdales/webplats.git
