@@ -14,6 +14,7 @@ let render_header _url _title =
                 <li><a href="/blog/">Blog</a></li>
                 <li><a href="/projects/">Projects</a></li>
                 <li><a href="/publications/">Papers</a></li>
+                <li><a href="/weeknotes/">Weeknotes</a></li>
                 <li><a href="/about/">About</a></li>
             </ul>
         </nav>
