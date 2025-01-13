@@ -113,6 +113,8 @@ let render_error site _error _debug_info suggested_response =
     <%s! (Render.render_head ~site ()) %>
     <body>
       <div class="almostall">
+      <div class="greenbar" id="topbar"></div>
+      <div class="page">
         <%s! render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
         <div id="container">
           <div class="content">
@@ -125,7 +127,9 @@ let render_error site _error _debug_info suggested_response =
             </section>
           </div>
         </div>
-        <%s! render_footer () %>   
+        <div class="greenbar" id="bottombar">
+          <span>Digital Flapjack Ltd, UK Company 06788544</span>
+        </div>
       </div>
     </body>
     </html>
