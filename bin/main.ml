@@ -81,8 +81,10 @@ let () =
 
   let aliases = Router.routes_for_aliases site in
 
+  let port = Site.port site in
+
   Dream.log "Adding %d routes"
     (List.length (toplevel @ sections @ taxonomies @ aliases @ static));
-  Dream.run ~error_handler:(Dream.error_template (Renderer.render_error site))
+  Dream.run ~error_handler:(Dream.error_template (Renderer.render_error site)) ~port
   @@ Dream.logger
   @@ Dream.router (toplevel @ sections @ taxonomies @ aliases @ static)
