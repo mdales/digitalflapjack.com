@@ -59,7 +59,7 @@ let () =
                    Section.pages sec |> List.map (fun p -> (sec, p)))
             |> List.sort (fun (_, a) (_, b) ->
                    Ptime.compare (Page.date b) (Page.date a)))
-          |> Dream.html);
+          |> Dream.respond ~headers:[("Content-Type", "application/rss+xml")]);
     ]
   in
 
