@@ -14,7 +14,7 @@ let render_page site sec _previous_page page _next_page =
               <article>
                     <div class="flex">
                         <div id="prose">
-                        <h3><a href=""><%s Page.title page %></a></h3>
+                        <h1><%s Page.title page %></h1>
                         <%s! Render.render_body page %>
                         </div>
                         <div id="mepic">

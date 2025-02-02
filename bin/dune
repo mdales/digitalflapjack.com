@@ -34,6 +34,18 @@
  (action
   (run dream_eml %{deps} --workspace %{workspace_root})))
 
+(rule
+ (targets talks.ml)
+ (deps talks.eml.ml)
+ (action
+  (run dream_eml %{deps} --workspace %{workspace_root})))
+
+(rule
+ (targets weeknotes.ml)
+ (deps weeknotes.eml.ml)
+ (action
+  (run dream_eml %{deps} --workspace %{workspace_root})))
+
 (executable
  (public_name digitalflapjack)
  (name main)

@@ -2,10 +2,15 @@ open Webplats
 
 let months = [| "Jan" ; "Feb" ; "Mar" ; "Apr" ; "May" ; "Jun" ; "Jul" ; "Aug" ; "Sept" ; "Oct" ; "Nov"; "Dec" |]
 
-let ptime_to_str (t : Ptime.t) : string = 
+let ptime_to_str (t : Ptime.t) : string =
   let ((year, month, day), _) = Ptime.to_date_time t in
   Printf.sprintf "%d %s %d" day months.(month - 1) year
-  
+
+let page_is_highlight page =
+  match (Page.get_key_as_bool page "highlight") with
+  | None -> false
+  | Some x -> x
+
 let render_index site =
   <html>
   <%s! Render.render_head ~site () %>
@@ -15,57 +20,27 @@ let render_index site =
         <div class="page">
           <%s! Renderer.render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
           <div class="content">
-            <div class="index">
+            <div class="article">
 
-% (Site.sections site) |> List.filter (fun s -> "blog" = (Section.title s)) |> List.iter begin fun (sec) ->
-              <div class="article index-<%s Section.title sec %>">
-                <article>
-                    <h3><a href="<%s Section.url sec %>">Recent posts</a></h3>
-                    <ul>
-% (List.iter (fun page ->
-                      <li>
-                        <div class="summarylistitem">
-                            <div>
-                                <a href="<%s Section.url ~page sec %>"
-                                    ><span class="itemtitle"><%s Page.title page %></span
-                                    ><br />
-                                    <div class="synopsis">
-% (match (Page.synopsis page) with Some prose ->
-                                        <%s prose %>
-% | None -> ());
-                                    </div></a
-                                >
-                            </div>
-                            <div>
-% (match (Page.titleimage page) with Some img ->
-% let _, ext = Fpath.split_ext (Fpath.v img.filename) in
-% (match ext with ".svg" ->
-                              <div class="indexicon"
-                                style="background-image: url('<%s Section.url ~page sec %>thumbnail.svg');"
-                              ></div>
-% | _ -> (
-                              <img
-                                src="<%s Section.url ~page sec %>thumbnail.jpg"
-                                srcset="<%s Section.url ~page sec %>thumbnail@2x.jpg 2x, <%s Section.url ~page sec %>thumbnail.jpg 1x"
-                              />
-% ));
-% | None -> ());
-                            </div>
-                        </div>
-                      </li>
-% ) (Section.pages sec));
-                      <li class="indexmore"><a href="<%s Section.url sec %>">See more...</a></li>
-                    </ul>
-                </article>
-              </div>
-% end;
+            <h2>Intro</h2>
+            <p>I'm Michael, and I'm a technologist and maker that's interested in building things that help make the world a better place for people.</p>
+
+            <h2>Highlights</h2>
+            <ul>
+% let sections = Site.sections site in
+% let pages = List.concat_map (fun sec -> Section.pages sec |> List.map (fun p -> (sec, p))) sections in
+% let highlights = List.filter (fun (_, p) -> page_is_highlight p) pages in
+% List.iter (fun (sec, page) ->
+    <li><a href="<%s Section.url ~page sec %>"><%s Page.title page %><br/></a></li>
+% ) highlights;
+            </ul>
             </div>
           </div>
         </div>
         <div class="greenbar" id="bottombar">
-          <span>Digital Flapjack Ltd, UK Company 06788544</span>
+          <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
         </div>
-      </div>  
+      </div>
     </div>
   </body>
   </html>

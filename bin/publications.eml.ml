@@ -1,11 +1,11 @@
 open Webplats
 
 let months = [| "Jan" ; "Feb" ; "Mar" ; "Apr" ; "May" ; "Jun" ; "Jul" ; "Aug" ; "Sep" ; "Oct" ; "Nov"; "Dec" |]
-  
-let ptime_to_str (t : Ptime.t) : string = 
+
+let ptime_to_str (t : Ptime.t) : string =
   let ((year, month, _day), _) = Ptime.to_date_time t in
   Printf.sprintf "%s %d" months.(month - 1) year
-  
+
 let render_section site sec =
   <html>
   <%s! Render.render_head ~site () %>
@@ -79,7 +79,7 @@ let render_section site sec =
           </div>
         </div>
         <div class="greenbar" id="bottombar">
-          <span>Digital Flapjack Ltd, UK Company 06788544</span>
+          <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
         </div>
       </div>
     </div>

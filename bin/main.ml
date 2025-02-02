@@ -18,26 +18,30 @@ let general_thumbnail_loader ~retina page =
       let i = Option.get (Page.get_key_as_string page "icon") in
       snapshot_image_loader page i
         (if retina then (256, 256) else (128, 128))
-  | _ -> thumbnail_loader page (if retina then 400 else 200)
+  | _ -> thumbnail_loader page (if retina then 800 else 400)
 
 let section_render sec =
   match Section.title sec with
   | "projects" -> Projects.render_section
   | "publications" -> Publications.render_section
+  | "weeknotes" -> Weeknotes.render_section
+  | "talks" -> Talks.render_section
   | _ -> Posts.render_section
 
 let taxonomy_section_renderer taxonomy _sec =
   match Taxonomy.title taxonomy with
   | _ -> Posts.render_section
-  
+
 let taxonomy_renderer taxonomy =
   match Taxonomy.title taxonomy with
   | _ -> Renderer.render_taxonomy
 
 let page_render page =
   match Page.original_section_title page with
-  | "blog" | "weeknotes" -> Posts.render_page
+  | "blog" -> Posts.render_page
+  | "weeknotes" -> Weeknotes.render_page
   | "root" -> About.render_page
+  | "talks" -> Talks.render_page
   | _ -> Renderer.render_page
 
 let () =
@@ -49,9 +53,21 @@ let () =
 
   let site = Site.of_directory website_dir in
 
+  (* As a temp thing, use the about page as the landing page *)
+  let about_sec = Site.sections site
+  |> List.filter (fun sec -> "website" = (Section.title sec))
+  |> List.hd
+  in
+  let about_page = Section.pages about_sec
+  |> List.filter (fun page -> "About" = (Page.title page))
+  |> List.hd
+  in
+
   let toplevel =
     [
-      Dream.get "/" (fun _ -> Index.render_index site |> Dream.html);
+      (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
+      Dream.get "/" (fun _ -> About.render_page site about_sec None about_page None |> Dream.html);
+
       Dream.get "/index.xml" (fun _ ->
           Rss.render_rss site
             (Site.sections site

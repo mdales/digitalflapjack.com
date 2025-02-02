@@ -8,41 +8,43 @@ let render_header _url _title =
         </a>
     </div>
     <div>
+        <h1>Tech notes by Michael Winston Dales</h1>
         <nav>
             <ul id="headernav">
                 <li><a href="/">Home</a></li>
                 <li><a href="/blog/">Blog</a></li>
                 <li><a href="/projects/">Projects</a></li>
                 <li><a href="/publications/">Papers</a></li>
+                 <li><a href="/talks/">Talks</a></li>
                 <li><a href="/weeknotes/">Weeknotes</a></li>
-                <li><a href="/about/">About</a></li>
+                <!-- <li><a href="/about/">About</a></li> -->
             </ul>
         </nav>
     </div>
   </div>
-  
+
 let months = [| "Jan" ; "Feb" ; "Mar" ; "Apr" ; "May" ; "Jun" ; "Jul" ; "Aug" ; "Sept" ; "Oct" ; "Nov"; "Dec" |]
-  
-let ptime_to_str (t : Ptime.t) : string = 
+
+let ptime_to_str (t : Ptime.t) : string =
   let ((year, month, day), _) = Ptime.to_date_time t in
   Printf.sprintf "%s %d, %d" months.(month - 1) day year
-  
-let render_footer ()   = 
+
+let render_footer ()   =
   <div id="foot" class="stripes">
     <nav>
       <div id="endlinks">
         <div>
           <ul class="rsslinks">
             <li>
-              <a href="/">All</a> 
+              <a href="/">All</a>
               (<a href="/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
             <li>
-              <a href="/posts/">Posts</a> 
+              <a href="/posts/">Posts</a>
               (<a href="/posts/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
             <li>
-              <a href="/sounds/">Sounds</a> 
+              <a href="/sounds/">Sounds</a>
               (<a href="/sounds/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
           </ul>
@@ -50,15 +52,15 @@ let render_footer ()   =
         <div>
           <ul class="rsslinks">
             <li>
-              <a href="/photos/">Photos</a> 
+              <a href="/photos/">Photos</a>
               (<a href="/photos/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
             <li>
-              <a href="/snapshots/">Snapshos</a> 
+              <a href="/snapshots/">Snapshos</a>
               (<a href="/snapshots/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
             <li>
-              <a href="/zines/">Zines</a> 
+              <a href="/zines/">Zines</a>
               (<a href="/zines/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
             </li>
           </ul>
@@ -86,7 +88,7 @@ let render_section site sec =
   <body>
     <div class="almostall">
       <%s! render_header (Section.url sec) (Section.title sec) %>
-    
+
     <ul>
 % (Section.pages sec) |> List.iter begin fun (page) ->
       <li>
@@ -95,9 +97,9 @@ let render_section site sec =
         </a>
       </li>
 % end;
-    
+
     </ul>
-    
+
     <%s! render_footer () %>
   </body>
   </html>
@@ -128,7 +130,7 @@ let render_error site _error _debug_info suggested_response =
           </div>
         </div>
         <div class="greenbar" id="bottombar">
-          <span>Digital Flapjack Ltd, UK Company 06788544</span>
+          <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
         </div>
       </div>
     </body>
@@ -185,12 +187,12 @@ let render_page site sec previous_page page next_page =
         </div>
       </div>
       <div class="greenbar" id="bottombar">
-        <span>Digital Flapjack Ltd, UK Company 06788544</span>
+        <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
       </div>
     </div>
   </body>
   </html>
-  
+
 let render_taxonomy site taxonomy =
   <html>
   <%s! (Render.render_head ~site ()) %>
@@ -199,7 +201,7 @@ let render_taxonomy site taxonomy =
     <div class="greenbar" id="topbar"></div>
     <div class="page">
       <%s! render_header (Taxonomy.url taxonomy) (Taxonomy.title taxonomy) %>
-    
+
     <ul>
 % (Taxonomy.sections taxonomy) |> List.iter begin fun (sec) ->
       <li>
@@ -208,12 +210,12 @@ let render_taxonomy site taxonomy =
         </a> - <%d List.length (Section.pages sec) %> items
       </li>
 % end;
-    
+
     </ul>
-    
+
     </div>
     <div class="greenbar" id="bottombar">
-      <span>Digital Flapjack Ltd, UK Company 06788544</span>
+      <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
     </div>
   </div>
   </body>

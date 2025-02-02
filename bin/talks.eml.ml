@@ -16,23 +16,8 @@ let render_section site sec =
           <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
           <div class="content">
             <section role="main">
-              <div class="blogcontents">
-% (Section.pages sec) |> List.iter begin fun (page) ->
-              <div class="blogcontents__item">
-                <ul class="leaders">
-                    <li>
-                      <span><a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></span>
-                      <span><%s ptime_to_str (Page.date page) %></span>
-                    </li>
-                </ul>
-                <div class="blogcontents__item__inner">
-                  <div>
-                      <p><%s (match (Page.synopsis page) with None -> "" | Some p -> p) %></p>
-                  </div>
-                </div>
-              </div>
-% end;
-              </div>
+        <h2>Under construction!</h2>
+
             </section>
           </div>
           <div id="footer">

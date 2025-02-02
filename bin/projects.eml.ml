@@ -6,7 +6,7 @@ let ptime_to_str (t : Ptime.t) : string =
   let ((year, month, _), _) = Ptime.to_date_time t in
   Printf.sprintf "%s %d" months.(month - 1) year
 
-let render_section site sec = 
+let render_section site sec =
   <html>
   <%s! Render.render_head ~site () %>
   <body>
@@ -65,7 +65,7 @@ let render_section site sec =
           </div>
         </div>
       <div class="greenbar" id="bottombar">
-        <span>Digital Flapjack Ltd, UK Company 06788544</span>
+        <!-- <span>Digital Flapjack Ltd, UK Company 06788544</span> -->
       </div>
     </div>
   </body>

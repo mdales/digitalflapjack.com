@@ -25,11 +25,7 @@ let render_section site sec =
                       <span><%s ptime_to_str (Page.date page) %></span>
                     </li>
                 </ul>
-                <div class="blogcontents__item__inner">
-                  <div>
-                      <p><%s (match (Page.synopsis page) with None -> "" | Some p -> p) %></p>
-                  </div>
-                </div>
+
               </div>
 % end;
               </div>
@@ -60,7 +56,9 @@ let render_page site sec previous_page page next_page =
               <div class="article">
                 <article>
                   <h1 class="title"><%s Page.title page %></h1>
-                  <p class="date"><%s ptime_to_str (Page.date page) %></p>
+                  <div class="content">
+                    <%s! Render.render_body page %>
+                  </div>
 % (match (Page.tags page) with [] -> () | tags -> (
                   <p>Tags:
 % let count = (List.length tags) - 1 in
@@ -71,10 +69,6 @@ let render_page site sec previous_page page next_page =
 % ) tags);
                 </p>
 % ));
-
-                  <div class="content">
-                    <%s! Render.render_body page %>
-                  </div>
                 </article>
 
                 <div class="paginationflex">
