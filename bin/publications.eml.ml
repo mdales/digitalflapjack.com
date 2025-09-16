@@ -62,10 +62,10 @@ let render_section site sec =
     <%s ptime_to_str (Page.date page) %><br/>
 
 % (match (Page.get_key_as_string page "paper") with Some url ->
-    | <a href="<%s url %>">Download</a>
+    | <a href="<%s Page.url_name page %>/<%s url %>">Download</a>
 % | None -> ());
 % (match (Page.get_key_as_string page "poster") with Some url ->
-    | <a href="<%s url %>">Poster</a>
+    | <a href="<%s Page.url_name page %>/<%s url %>">Poster</a>
 % | None -> ());
 % (match (Page.get_key_as_string page "online") with Some url ->
     | <a href="<%s url %>">Online</a>
