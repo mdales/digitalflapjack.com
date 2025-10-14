@@ -39,10 +39,16 @@ let taxonomy_renderer taxonomy =
 let page_render page =
   match Page.original_section_title page with
   | "blog" -> Posts.render_page
+  | "publications" -> Publications.render_page
   | "weeknotes" -> Weeknotes.render_page
   | "root" -> About.render_page
   | "talks" -> Talks.render_page
   | _ -> Renderer.render_page
+
+let page_body page =
+  match Page.original_section_title page with
+  | "publications" -> Publications.render_body
+  | _ -> Render.render_body
 
 let () =
   let website_dir =
@@ -54,28 +60,30 @@ let () =
   let site = Site.of_directory website_dir in
 
   (* As a temp thing, use the about page as the landing page *)
-  let about_sec = Site.sections site
-  |> List.filter (fun sec -> "website" = (Section.title sec))
-  |> List.hd
+  let about_sec =
+    Site.sections site
+    |> List.filter (fun sec -> "website" = Section.title sec)
+    |> List.hd
   in
-  let about_page = Section.pages about_sec
-  |> List.filter (fun page -> "About" = (Page.title page))
-  |> List.hd
+  let about_page =
+    Section.pages about_sec
+    |> List.filter (fun page -> "About" = Page.title page)
+    |> List.hd
   in
 
   let toplevel =
     [
       (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
-      Dream.get "/" (fun _ -> About.render_page site about_sec None about_page None |> Dream.html);
-
+      Dream.get "/" (fun _ ->
+          About.render_page site about_sec None about_page None |> Dream.html);
       Dream.get "/index.xml" (fun _ ->
           Rss.render_rss site
             (Site.sections site
             |> List.concat_map (fun sec ->
-                   Section.pages sec |> List.map (fun p -> (sec, p)))
-            |> List.sort (fun (_, a) (_, b) ->
+                   Section.pages sec |> List.map (fun p -> (sec, p, page_body p)))
+            |> List.sort (fun (_, a, _) (_, b, _) ->
                    Ptime.compare (Page.date b) (Page.date a)))
-          |> Dream.respond ~headers:[("Content-Type", "application/rss+xml")]);
+          |> Dream.respond ~headers:[ ("Content-Type", "application/rss+xml") ]);
     ]
   in
 
