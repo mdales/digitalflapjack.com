@@ -84,6 +84,17 @@ let () =
             |> List.sort (fun (_, a, _) (_, b, _) ->
                    Ptime.compare (Page.date b) (Page.date a)))
           |> Dream.respond ~headers:[ ("Content-Type", "application/rss+xml") ]);
+      Dream.get "/feed.json" (fun _ ->
+        let feed = Rss.render_jsonfeed site
+          (Site.sections site
+          |> List.concat_map (fun sec ->
+                 Section.pages sec |> List.map (fun p -> (sec, p, page_body p)))
+          |> List.sort (fun (_, a, _) (_, b, _) ->
+                 Ptime.compare (Page.date b) (Page.date a))) in
+        match feed with
+        | Result.Ok body ->  Dream.respond ~headers:[ ("Content-Type", "application/feed+json") ] body
+        | _ -> Dream.html ~status:`Internal_Server_Error "<h1>Something went wrong</h1>"
+      );
     ]
   in
 
