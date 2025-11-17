@@ -13,7 +13,7 @@ let render_section site sec =
     <div class="almostall">
         <div class="greenbar" id="topbar"></div>
         <div class="page">
-          <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
+          <%s! Renderer.render_header (Section.uri sec) (Section.title sec) %>
           <div id="content">
                 <h1>Papers and Publications</h1>
                 <div class="paperslist">
@@ -21,7 +21,7 @@ let render_section site sec =
 % let authorslist = Page.get_key_as_yaml page "authors" in
                         <div class="paper">
                             <p>
-                                <span class="title"><a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></span><br/>
+                                <span class="title"><a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %></a></span><br/>
                                 <span class="authors">
 % (match authorslist with Some yaml ->
 %   (match yaml with `A lst ->
@@ -162,7 +162,7 @@ let render_page site sec previous_page page next_page =
     <div class="almostall">
       <div class="greenbar" id="topbar"></div>
       <div class="page">
-        <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
+        <%s! Renderer.render_header (Section.uri sec) (Section.title sec) %>
           <div id="content">
               <div class="article">
                 <article>
@@ -173,12 +173,12 @@ let render_page site sec previous_page page next_page =
 
                 <div class="paginationflex">
 % (match previous_page with Some page ->
-                  <a href="<%s Section.url ~page sec %>">&#10094; Newer</a>
+                  <a href="<%s Uri.to_string (Section.uri ~page sec) %>">&#10094; Newer</a>
 % | None -> (
                   <span></span>
 % ));
 % (match next_page with Some page ->
-                  <a href="<%s Section.url ~page sec %>">Older &#10095;</a>
+                  <a href="<%s Uri.to_string (Section.uri ~page sec) %>">Older &#10095;</a>
 % | None -> ());
                 </div>
               </div>

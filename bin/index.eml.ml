@@ -18,7 +18,7 @@ let render_index site =
     <div class="almostall">
         <div class="greenbar" id="topbar"></div>
         <div class="page">
-          <%s! Renderer.render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
+          <%s! Renderer.render_header (Section.uri (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
           <div class="content">
             <div class="article">
 
@@ -31,7 +31,7 @@ let render_index site =
 % let pages = List.concat_map (fun sec -> Section.pages sec |> List.map (fun p -> (sec, p))) sections in
 % let highlights = List.filter (fun (_, p) -> page_is_highlight p) pages in
 % List.iter (fun (sec, page) ->
-    <li><a href="<%s Section.url ~page sec %>"><%s Page.title page %><br/></a></li>
+    <li><a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %><br/></a></li>
 % ) highlights;
             </ul>
             </div>

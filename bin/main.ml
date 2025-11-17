@@ -3,21 +3,18 @@ open Webplats
 let thumbnail_loader page thumbnail_size _root _path request =
   let pathp = Image.render_thumbnail_lwt page thumbnail_size in
   Lwt.bind pathp (fun path ->
-    Router.static_loader "/" (Fpath.to_string path) request
-  )
+      Router.static_loader "/" (Fpath.to_string path) request)
 
 let snapshot_image_loader page image bounds _root _path request =
   let pathp = Image.render_image_lwt page image Fit bounds in
   Lwt.bind pathp (fun path ->
-    Router.static_loader "/" (Fpath.to_string path) request
-  )
+      Router.static_loader "/" (Fpath.to_string path) request)
 
 let general_thumbnail_loader ~retina page =
   match Page.original_section_title page with
   | "projects" ->
       let i = Option.get (Page.get_key_as_string page "icon") in
-      snapshot_image_loader page i
-        (if retina then (256, 256) else (128, 128))
+      snapshot_image_loader page i (if retina then (256, 256) else (128, 128))
   | _ -> thumbnail_loader page (if retina then 800 else 400)
 
 let section_render sec =
@@ -29,12 +26,10 @@ let section_render sec =
   | _ -> Posts.render_section
 
 let taxonomy_section_renderer taxonomy _sec =
-  match Taxonomy.title taxonomy with
-  | _ -> Posts.render_section
+  match Taxonomy.title taxonomy with _ -> Posts.render_section
 
 let taxonomy_renderer taxonomy =
-  match Taxonomy.title taxonomy with
-  | _ -> Renderer.render_taxonomy
+  match Taxonomy.title taxonomy with _ -> Renderer.render_taxonomy
 
 let page_render page =
   match Page.original_section_title page with
@@ -45,7 +40,7 @@ let page_render page =
   | "talks" -> Talks.render_page
   | _ -> Renderer.render_page
 
-let page_body page =
+let page_body_renderer page =
   match Page.original_section_title page with
   | "publications" -> Publications.render_body
   | _ -> Render.render_body
@@ -72,30 +67,10 @@ let () =
   in
 
   let toplevel =
-    [
-      (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
-      Dream.get "/" (fun _ ->
-          About.render_page site about_sec None about_page None |> Dream.html);
-      Dream.get "/index.xml" (fun _ ->
-          Rss.render_rss site
-            (Site.sections site
-            |> List.concat_map (fun sec ->
-                   Section.pages sec |> List.map (fun p -> (sec, p, page_body p)))
-            |> List.sort (fun (_, a, _) (_, b, _) ->
-                   Ptime.compare (Page.date b) (Page.date a)))
-          |> Dream.respond ~headers:[ ("Content-Type", "application/rss+xml") ]);
-      Dream.get "/feed.json" (fun _ ->
-        let feed = Rss.render_jsonfeed site
-          (Site.sections site
-          |> List.concat_map (fun sec ->
-                 Section.pages sec |> List.map (fun p -> (sec, p, page_body p)))
-          |> List.sort (fun (_, a, _) (_, b, _) ->
-                 Ptime.compare (Page.date b) (Page.date a))) in
-        match feed with
-        | Result.Ok body ->  Dream.respond ~headers:[ ("Content-Type", "application/feed+json") ] body
-        | _ -> Dream.html ~status:`Internal_Server_Error "<h1>Something went wrong</h1>"
-      );
-    ]
+    (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
+    Dream.get "/" (fun _ ->
+        About.render_page site about_sec None about_page None |> Dream.html)
+    :: []
   in
 
   let static = Router.collect_static_routes site in
@@ -104,14 +79,15 @@ let () =
     List.concat_map
       (Router.routes_for_section ~thumbnail_loader:general_thumbnail_loader
          ~image_loader:snapshot_image_loader ~section_renderer:section_render
-         ~page_renderer:page_render site)
+         ~page_renderer:page_render ~page_body_renderer site)
       (Site.sections site)
   in
 
   let taxonomies =
     Router.routes_for_taxonomies ~thumbnail_loader:general_thumbnail_loader
-      ~image_loader:snapshot_image_loader ~taxonomy_renderer ~taxonomy_section_renderer
-      ~page_renderer:page_render site
+      ~image_loader:snapshot_image_loader ~taxonomy_renderer
+      ~taxonomy_section_renderer ~page_renderer:page_render ~page_body_renderer
+      site
   in
 
   let aliases = Router.routes_for_aliases site in
@@ -120,6 +96,8 @@ let () =
 
   Dream.log "Adding %d routes"
     (List.length (toplevel @ sections @ taxonomies @ aliases @ static));
-  Dream.run ~error_handler:(Dream.error_template (Renderer.render_error site)) ~port
+  Dream.run
+    ~error_handler:(Dream.error_template (Renderer.render_error site))
+    ~port
   @@ Dream.logger
   @@ Dream.router (toplevel @ sections @ taxonomies @ aliases @ static)

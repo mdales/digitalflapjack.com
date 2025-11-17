@@ -8,7 +8,7 @@ let render_page site sec _previous_page page _next_page =
     <div class="almostall">
       <div class="greenbar" id="topbar"></div>
       <div class="page">
-        <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
+        <%s! Renderer.render_header (Section.uri sec) (Section.title sec) %>
           <div id="content">
               <div class="article">
               <article>
@@ -20,7 +20,12 @@ let render_page site sec _previous_page page _next_page =
                         <div style="position: relative; width:404px;">
                           <div id="mepic"  style="position: absolute; z-index: 100;">
                               <h2>&nbsp;</h2>
-                              <img class="aboutme" src="<%s Section.url ~page sec %>thumbnail.jpg" srcset="<%s Section.url ~page sec %>thumbnail@2x.jpg 2x, <%s Section.url ~page sec %>thumbnail.jpg 1x"/>
+% let thumbnail_uri = (Section.uri ~page ~resource:"thumbnail.jpg" sec) in
+% let thumbnail_2x_uri = (Section.uri ~page ~resource:"thumbnail@2x.jpg" sec) in
+                              <img class="aboutme"
+                                src="<%s Uri.to_string thumbnail_uri %>"
+                                srcset="<%s Uri.to_string thumbnail_2x_uri %> 2x, <%s Uri.to_string thumbnail_uri %> 1x"
+                              />
                           </div>
                           <div id="sidebar" style="position: absolute; height: 100%; z-index: 10;">
                           <h2>&nbsp;</h2>

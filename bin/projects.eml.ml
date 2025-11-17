@@ -13,7 +13,7 @@ let render_section site sec =
     <div class="almostall">
         <div class="greenbar" id="topbar"></div>
         <div class="page">
-          <%s! Renderer.render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
+          <%s! Renderer.render_header (Section.uri (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
           <div id="content">
             <div class="projectlist">
 % (List.iter (fun page ->
@@ -28,7 +28,7 @@ let render_section site sec =
 % (match src with Some url ->
                   href="<%s url %>"
 % | None ->
-                  href="<%s Section.url ~page sec %>"
+                  href="<%s Uri.to_string (Section.uri ~page sec) %>"
 % );
                 >
 % | false -> ());
@@ -37,9 +37,9 @@ let render_section site sec =
 % (match icon with Some filename ->
 % let _, ext = Fpath.split_ext (Fpath.v filename) in
 % (match ext with ".svg" ->
-                    <div class="projecticon" style="background-image: url('<%s Section.url ~page sec %>thumbnail.svg');"></div>
+                    <div class="projecticon" style="background-image: url('<%s Uri.to_string (Section.uri ~page sec) %>thumbnail.svg');"></div>
 % | _ -> (
-                    <img class="projecticon" src="<%s Section.url ~page sec %>thumbnail.jpg" srcset="<%s Section.url ~page sec %>thumbnail@2x.jpg 2x, <%s Section.url ~page sec %>thumbnail.jpg 1x"/>
+                    <img class="projecticon" src="<%s Uri.to_string (Section.uri ~page sec) %>thumbnail.jpg" srcset="<%s Uri.to_string (Section.uri ~page sec) %>thumbnail@2x.jpg 2x, <%s Uri.to_string (Section.uri ~page sec) %>thumbnail.jpg 1x"/>
 % ));
 % | None -> (
                   <div class="projecticon"></div>

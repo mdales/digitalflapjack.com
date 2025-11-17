@@ -13,7 +13,7 @@ let render_section site sec =
     <div class="almostall">
         <div class="greenbar" id="topbar"></div>
         <div class="page">
-          <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
+          <%s! Renderer.render_header (Section.uri sec) (Section.title sec) %>
           <div class="content">
             <section role="main">
               <div class="blogcontents">
@@ -21,7 +21,7 @@ let render_section site sec =
               <div class="blogcontents__item">
                 <ul class="leaders">
                     <li>
-                      <span><a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></span>
+                      <span><a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %></a></span>
                       <span><%s ptime_to_str (Page.date page) %></span>
                     </li>
                 </ul>
@@ -51,7 +51,7 @@ let render_page site sec previous_page page next_page =
     <div class="almostall">
       <div class="greenbar" id="topbar"></div>
       <div class="page">
-        <%s! Renderer.render_header (Section.url sec) (Section.title sec) %>
+        <%s! Renderer.render_header (Section.uri sec) (Section.title sec) %>
           <div id="content">
               <div class="article">
                 <article>
@@ -73,12 +73,12 @@ let render_page site sec previous_page page next_page =
 
                 <div class="paginationflex">
 % (match previous_page with Some page ->
-                  <a href="<%s Section.url ~page sec %>">&#10094; <%s Page.title page %></a>
+                  <a href="<%s Uri.to_string (Section.uri ~page sec) %>">&#10094; <%s Page.title page %></a>
 % | None -> (
                   <span></span>
 % ));
 % (match next_page with Some page ->
-                  <a href="<%s Section.url ~page sec %>"><%s Page.title page %> &#10095;</a>
+                  <a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %> &#10095;</a>
 % | None -> ());
                 </div>
               </div>

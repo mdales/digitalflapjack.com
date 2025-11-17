@@ -1,6 +1,6 @@
 open Webplats
 
-let render_header _url _title =
+let render_header _uri _title =
   <div id="header">
     <div>
         <a href="/">
@@ -87,12 +87,12 @@ let render_section site sec =
   <%s! (Render.render_head ~site ~sec ()) %>
   <body>
     <div class="almostall">
-      <%s! render_header (Section.url sec) (Section.title sec) %>
+      <%s! render_header (Section.uri sec) (Section.title sec) %>
 
     <ul>
 % (Section.pages sec) |> List.iter begin fun (page) ->
       <li>
-      <a href="<%s Section.url ~page sec %>/">
+      <a href="<%s Uri.to_string (Section.uri ~page sec) %>/">
           <%s Page.title page %>
         </a>
       </li>
@@ -117,7 +117,7 @@ let render_error site _error _debug_info suggested_response =
       <div class="almostall">
       <div class="greenbar" id="topbar"></div>
       <div class="page">
-        <%s! render_header (Section.url (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
+        <%s! render_header (Section.uri (Site.toplevel site)) (Section.title (Site.toplevel site)) %>
         <div id="container">
           <div class="content">
             <section role="main">
@@ -145,7 +145,7 @@ let render_page site sec previous_page page next_page =
     <div class="almostall">
       <div class="greenbar" id="topbar"></div>
       <div class="page">
-        <%s! render_header (Section.url sec) (Section.title sec) %>
+        <%s! render_header (Section.uri sec) (Section.title sec) %>
         <div id="container">
           <div class="content">
             <section role="main">
@@ -164,10 +164,10 @@ let render_page site sec previous_page page next_page =
                   <div class="postscript">
                     <ul>
 % (match previous_page with Some page ->
-                      <li><strong>Next</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
+                      <li><strong>Next</strong>: <a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %></a></li>
 % | None -> ());
 % (match next_page with Some page ->
-                      <li><strong>Previous</strong>: <a href="<%s Section.url ~page sec %>"><%s Page.title page %></a></li>
+                      <li><strong>Previous</strong>: <a href="<%s Uri.to_string (Section.uri ~page sec) %>"><%s Page.title page %></a></li>
 % | None -> ());
 % (match (Page.tags page) with [] -> () | tags ->
 % let count = (List.length tags) - 1 in
@@ -205,7 +205,7 @@ let render_taxonomy site taxonomy =
     <ul>
 % (Taxonomy.sections taxonomy) |> List.iter begin fun (sec) ->
       <li>
-      <a href="<%s Section.url sec %>">
+      <a href="<%s Uri.to_string (Section.uri sec) %>">
           <%s Section.title sec %>
         </a> - <%d List.length (Section.pages sec) %> items
       </li>
