@@ -31,7 +31,7 @@ let taxonomy_section_renderer taxonomy _sec =
 let taxonomy_renderer taxonomy =
   match Taxonomy.title taxonomy with _ -> Renderer.render_taxonomy
 
-let page_render page =
+let page_renderer page =
   match Page.original_section_title page with
   | "blog" -> Posts.render_page
   | "publications" -> Publications.render_page
@@ -66,38 +66,31 @@ let () =
     |> List.hd
   in
 
-  let toplevel =
+  let overrides =
     (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
     Dream.get "/" (fun _ ->
         About.render_page site about_sec None about_page None |> Dream.html)
     :: []
   in
 
-  let static = Router.collect_static_routes site in
-
-  let sections =
-    List.concat_map
-      (Router.routes_for_section ~thumbnail_loader:general_thumbnail_loader
-         ~image_loader:snapshot_image_loader ~section_renderer:section_render
-         ~page_renderer:page_render ~page_body_renderer site)
-      (Site.sections site)
+  let routes = Router.of_site
+    ~section_renderer:section_render
+    ~image_loader:snapshot_image_loader
+    ~thumbnail_loader:general_thumbnail_loader
+    ~taxonomy_section_renderer
+    ~taxonomy_renderer
+    ~page_renderer
+    ~page_body_renderer
+    site
   in
 
-  let taxonomies =
-    Router.routes_for_taxonomies ~thumbnail_loader:general_thumbnail_loader
-      ~image_loader:snapshot_image_loader ~taxonomy_renderer
-      ~taxonomy_section_renderer ~page_renderer:page_render ~page_body_renderer
-      site
-  in
-
-  let aliases = Router.routes_for_aliases site in
+  let routes = overrides @ routes in
 
   let port = Site.port site in
 
-  Dream.log "Adding %d routes"
-    (List.length (toplevel @ sections @ taxonomies @ aliases @ static));
+  Dream.log "Adding %d routes" (List.length routes);
   Dream.run
     ~error_handler:(Dream.error_template (Renderer.render_error site))
     ~port
   @@ Dream.logger
-  @@ Dream.router (toplevel @ sections @ taxonomies @ aliases @ static)
+  @@ Dream.router routes
