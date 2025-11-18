@@ -29,81 +29,6 @@ let ptime_to_str (t : Ptime.t) : string =
   let ((year, month, day), _) = Ptime.to_date_time t in
   Printf.sprintf "%s %d, %d" months.(month - 1) day year
 
-let render_footer ()   =
-  <div id="foot" class="stripes">
-    <nav>
-      <div id="endlinks">
-        <div>
-          <ul class="rsslinks">
-            <li>
-              <a href="/">All</a>
-              (<a href="/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-            <li>
-              <a href="/posts/">Posts</a>
-              (<a href="/posts/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-            <li>
-              <a href="/sounds/">Sounds</a>
-              (<a href="/sounds/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-          </ul>
-        </div>
-        <div>
-          <ul class="rsslinks">
-            <li>
-              <a href="/photos/">Photos</a>
-              (<a href="/photos/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-            <li>
-              <a href="/snapshots/">Snapshos</a>
-              (<a href="/snapshots/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-            <li>
-              <a href="/zines/">Zines</a>
-              (<a href="/zines/index.xml" type="application/rss+xml" target="_blank">RSS</a>)
-            </li>
-          </ul>
-        </div>
-        <div>
-          <ul class="rsslinks">
-          	<li><a href="https://mwdales-guitars.uk">Guitar making</a></li>
-          	<li><a href="https://digitalflapjack.com">Computering</a></li>
-          </ul>
-        </div>
-        <div>
-          <ul class="rsslinks">
-          	<li><a href="https://toot.mynameismwd.org/@michael">Social</a></li>
-          	<li><a href="/about/">About</a></li>
-          	<li><a href="/search/">Search</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </div>
-
-let render_section site sec =
-  <html>
-  <%s! (Render.render_head ~site ~sec ()) %>
-  <body>
-    <div class="almostall">
-      <%s! render_header (Section.uri sec) (Section.title sec) %>
-
-    <ul>
-% (Section.pages sec) |> List.iter begin fun (page) ->
-      <li>
-      <a href="<%s Uri.to_string (Section.uri ~page sec) %>/">
-          <%s Page.title page %>
-        </a>
-      </li>
-% end;
-
-    </ul>
-
-    <%s! render_footer () %>
-  </body>
-  </html>
-
 let render_error site _error _debug_info suggested_response =
   let status = Dream.status suggested_response in
   let code = Dream.status_to_int status
@@ -200,7 +125,7 @@ let render_taxonomy site taxonomy =
     <div class="almostall">
     <div class="greenbar" id="topbar"></div>
     <div class="page">
-      <%s! render_header (Taxonomy.url taxonomy) (Taxonomy.title taxonomy) %>
+      <%s! render_header (Taxonomy.uri taxonomy) (Taxonomy.title taxonomy) %>
 
     <ul>
 % (Taxonomy.sections taxonomy) |> List.iter begin fun (sec) ->
