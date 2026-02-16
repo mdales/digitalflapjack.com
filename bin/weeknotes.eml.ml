@@ -55,7 +55,16 @@ let render_page site sec previous_page page next_page =
           <div id="content">
               <div class="article">
                 <article>
-                  <h1 class="title"><%s Page.title page %></h1>
+% let is_old_weeknotes = String.starts_with ~prefix:"Weeknotes:" (Page.title page) in
+                  <h1 class="title">
+% (match is_old_weeknotes with false ->
+                    Weeknotes:
+% | true -> ());
+                    <%s Page.title page %>
+                  </h1>
+% (match is_old_weeknotes with false ->
+                  <p class="date"><%s ptime_to_str (Page.date page) %></p>
+% | true -> ());
                   <div class="content">
                     <%s! Render.render_body page %>
                   </div>
