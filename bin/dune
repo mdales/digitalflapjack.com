@@ -1,54 +1,6 @@
-(rule
- (targets index.ml)
- (deps index.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets about.ml)
- (deps about.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets posts.ml)
- (deps posts.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets projects.ml)
- (deps projects.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets publications.ml)
- (deps publications.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets renderer.ml)
- (deps renderer.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets talks.ml)
- (deps talks.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
-(rule
- (targets weeknotes.ml)
- (deps weeknotes.eml.ml)
- (action
-  (run dream_eml %{deps} --workspace %{workspace_root})))
-
 (executable
  (public_name digitalflapjack)
  (name main)
- (libraries webplats dream fpath)
+ (libraries webplats dream fpath htmlit)
  (preprocess
   (pps lwt_ppx)))

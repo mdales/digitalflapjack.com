@@ -69,7 +69,7 @@ let () =
   let overrides =
     (* Dream.get "/" (fun _ -> Index.render_index site |> Dream.html); *)
     Dream.get "/" (fun _ ->
-        About.render_page site about_sec None about_page None |> Dream.html)
+        About.render_page site about_sec None about_page None |> Htmlit.El.to_string ~doctype:true |> Dream.html)
     :: []
   in
 
