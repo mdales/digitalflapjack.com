@@ -56,7 +56,7 @@ let render_page site sec previous_page page next_page =
   | true -> [El.h1 ~at:[At.class' "title"]  [El.txt raw_title]]
   | false -> [
     El.h1 ~at:[At.class' "title"] [El.txt (Printf.sprintf "Weeknotes: %s" raw_title)];
-    El.p [El.txt date];
+    El.p ~at:[At.class' "date"] [El.txt date];
   ] in
 
   let tags = match (Page.tags page) with
