@@ -46,9 +46,15 @@ let page_body_renderer page =
   | _ -> Render.render_body
 
 let () =
+  Eio_main.run @@ fun env ->
+  Eio.Switch.run @@ fun sw ->
+
   let website_dir =
     match Array.to_list Sys.argv with
-    | [ _; path ] -> Fpath.v path
+    | [ _; path ] -> (
+      if Filename.is_relative path then Eio.Path.(env#cwd / path)
+      else Eio.Path.(env#fs / path)
+    )
     | _ -> failwith "Expected one arg, your website dir"
   in
 
