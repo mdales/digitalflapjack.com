@@ -158,7 +158,7 @@ let render_page site sec previous_page page next_page =
   El.html [header;body]
 
 
-let render_error site _error _debug_info suggested_response =
+(* let render_error site _error _debug_info suggested_response =
   let status = Dream.status suggested_response in
   let code = Dream.status_to_int status
   and reason = Dream.status_to_string status in
@@ -189,4 +189,4 @@ let render_error site _error _debug_info suggested_response =
 
   Dream.set_header suggested_response "Content-Type" Dream.text_html;
   Dream.set_body suggested_response html;
-  Lwt.return suggested_response
+  Lwt.return suggested_response *)

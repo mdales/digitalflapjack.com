@@ -1,6 +1,4 @@
 (executable
  (public_name digitalflapjack)
  (name main)
- (libraries webplats dream fpath htmlit)
- (preprocess
-  (pps lwt_ppx)))
+ (libraries webplats fpath htmlit))
