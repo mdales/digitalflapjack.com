@@ -9,10 +9,10 @@ let get_cache_dir env =
   in
   Eio.Path.(env#fs / p)
 
-let thumbnail_loader process_mgr cache_dir page thumbnail_size  =
+let thumbnail_loader process_mgr cache_dir page thumbnail_size =
   Image.render_thumbnail process_mgr cache_dir page thumbnail_size
 
-let snapshot_image_loader process_mgr cache_dir page image bounds  =
+let snapshot_image_loader process_mgr cache_dir page image bounds =
   Image.render_image process_mgr cache_dir page image Fit bounds
 
 let diagram_loader process_mgr cache_dir page code =
@@ -22,8 +22,10 @@ let general_thumbnail_loader ~process_mgr ~cache_dir ~retina page =
   match Page.original_section_title page with
   | "projects" ->
       let i = Option.get (Page.get_key_as_string page "icon") in
-      snapshot_image_loader process_mgr cache_dir page i (if retina then (256, 256) else (128, 128))
-  | _ -> thumbnail_loader process_mgr cache_dir page (if retina then 800 else 400)
+      snapshot_image_loader process_mgr cache_dir page i
+        (if retina then (256, 256) else (128, 128))
+  | _ ->
+      thumbnail_loader process_mgr cache_dir page (if retina then 800 else 400)
 
 let section_render sec =
   match Section.title sec with
@@ -81,72 +83,61 @@ let handler routes _socket req _body =
 
 let () =
   Eio_main.run @@ fun env ->
+  let cache_dir = get_cache_dir env in
+  Eio.Switch.run @@ fun sw ->
+  let website_dir =
+    match Array.to_list Sys.argv with
+    | [ _; path ] ->
+        if Filename.is_relative path then Eio.Path.(env#cwd / path)
+        else Eio.Path.(env#fs / path)
+    | _ -> failwith "Expected one arg, your website dir"
+  in
 
-    let cache_dir = get_cache_dir env in
-    Eio.Switch.run @@ fun sw ->
+  let site = Site.of_directory website_dir in
 
-      let website_dir =
-        match Array.to_list Sys.argv with
-        | [ _; path ] -> (
-          if Filename.is_relative path then Eio.Path.(env#cwd / path)
-          else Eio.Path.(env#fs / path)
-        )
-        | _ -> failwith "Expected one arg, your website dir"
-      in
+  (* As a temp thing, use the about page as the landing page *)
+  let about_sec =
+    Site.sections site
+    |> List.filter (fun sec -> "website" = Section.title sec)
+    |> List.hd
+  in
+  let about_page =
+    Section.pages about_sec
+    |> List.filter (fun page -> "About" = Page.title page)
+    |> List.hd
+  in
 
-      let site = Site.of_directory website_dir in
+  let overrides : Router.route list =
+    {
+      uri = Uri.of_string "/";
+      handler =
+        (let body =
+           About.render_page site about_sec None about_page None
+           |> Htmlit.El.to_string ~doctype:true
+         in
+         fun _ -> Cohttp_eio.Server.respond_string ~status:`OK ~body ());
+    }
+    :: []
+  in
 
-      (* As a temp thing, use the about page as the landing page *)
-      let about_sec =
-        Site.sections site
-        |> List.filter (fun sec -> "website" = Section.title sec)
-        |> List.hd
-      in
-      let about_page =
-        Section.pages about_sec
-        |> List.filter (fun page -> "About" = Page.title page)
-        |> List.hd
-      in
+  let routes =
+    Router.of_site ~section_renderer:section_render
+      ~image_loader:(snapshot_image_loader env#process_mgr cache_dir)
+      ~thumbnail_loader:
+        (general_thumbnail_loader ~process_mgr:env#process_mgr ~cache_dir)
+      ~diagram_loader:(diagram_loader env#process_mgr cache_dir)
+      ~taxonomy_section_renderer ~taxonomy_renderer ~page_renderer
+      ~page_body_renderer site
+  in
 
-      let overrides : Router.route list =
-        {
-          uri=Uri.of_string "/";
-          handler=(
-            let body = About.render_page site about_sec None about_page None |> Htmlit.El.to_string ~doctype:true in
-            fun _ -> Cohttp_eio.Server.respond_string ~status:`OK ~body ()
-          )
-        } :: []
-      in
+  let routes =
+    overrides @ routes |> List.map (fun p -> (p.Router.uri, p.Router.handler))
+  in
 
-      let routes = Router.of_site
-        ~section_renderer:section_render
-        ~image_loader:(snapshot_image_loader env#process_mgr cache_dir)
-        ~thumbnail_loader:(general_thumbnail_loader ~process_mgr:env#process_mgr ~cache_dir)
-        ~diagram_loader:(diagram_loader env#process_mgr cache_dir)
-        ~taxonomy_section_renderer
-        ~taxonomy_renderer
-        ~page_renderer
-        ~page_body_renderer
-        site
-      in
-
-      let routes = (overrides @ routes) |> List.map (fun p -> (p.Router.uri, p.Router.handler)) in
-
-      let socket =
-        Eio.Net.listen env#net ~sw ~backlog:128 ~reuse_addr:true
-          (`Tcp (Eio.Net.Ipaddr.V4.loopback, 8080))
-      in
-      Printf.printf "Listening on http://localhost:8080\n%!";
-      Cohttp_eio.Server.run socket ~on_error:log_error
-        (Cohttp_eio.Server.make ~callback:(handler routes) ())
-
-
-
-    (*  let port = Site.port site in
-
-      Dream.log "Adding %d routes" (List.length routes);
-      Dream.run
-        ~error_handler:(Dream.error_template (Renderer.render_error site))
-        ~port
-      @@ Dream.logger
-      @@ Dream.router routes *)
+  let socket =
+    Eio.Net.listen env#net ~sw ~backlog:128 ~reuse_addr:true
+      (`Tcp (Eio.Net.Ipaddr.V4.loopback, 8080))
+  in
+  Printf.printf "Listening on http://localhost:8080\n%!";
+  Cohttp_eio.Server.run socket ~on_error:log_error
+    (Cohttp_eio.Server.make ~callback:(handler routes) ())
