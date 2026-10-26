@@ -1,7 +1,7 @@
 open Htmlit
 open Webplats
 
-let render_pub_body show_abstract sec_opt page =
+let render_pub_body site show_abstract sec_opt page =
   let authorslist =
     match Page.get_key_as_yaml page "authors" with
     | Some yaml -> (
@@ -74,7 +74,7 @@ let render_pub_body show_abstract sec_opt page =
             ~at:[ At.class' "content" ]
             [
               El.b [ El.txt "Abstract:" ];
-              El.unsafe_raw (Render.render_body page);
+              El.unsafe_raw (Render.render_body ~site page);
             ];
         ]
   in
@@ -110,8 +110,8 @@ let render_pub_body show_abstract sec_opt page =
   ]
   @ abstract
 
-let render_body page =
-  let el = render_pub_body true None page in
+let render_body ~site page =
+  let el = render_pub_body site true None page in
   El.to_string ~doctype:false (El.div el)
 
 let render_section site sec =
@@ -120,7 +120,7 @@ let render_section site sec =
 
   let paperslist =
     List.concat_map
-      (fun page -> render_pub_body false (Some sec) page)
+      (fun page -> render_pub_body site false (Some sec) page)
       (Section.pages sec)
   in
 
@@ -173,7 +173,7 @@ let render_page site sec previous_page page next_page =
                   [
                     El.div
                       ~at:[ At.class' "article" ]
-                      [ El.article (render_pub_body true None page); nav_links ];
+                      [ El.article (render_pub_body site true None page); nav_links ];
                   ];
               ];
             El.div ~at:[ At.id "footer" ] [];

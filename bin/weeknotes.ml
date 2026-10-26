@@ -60,7 +60,7 @@ let render_page site sec previous_page page next_page =
   let topbar = Renderer.render_header (Section.uri sec) (Section.title sec) in
   let raw_title = Page.title page in
   let is_old_weeknotes = String.starts_with ~prefix:"Weeknotes:" raw_title in
-  let content = Render.render_body page in
+  let content = Render.render_body ~site page in
   let date = Renderer.ptime_to_str (Page.date page) in
 
   let article_head =

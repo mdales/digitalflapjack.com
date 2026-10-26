@@ -4,7 +4,7 @@ open Webplats
 let render_page site sec _previous_page page _next_page =
   let header = Render.render_head ~site ~sec ~page () in
   let topbar = Renderer.render_header (Section.uri sec) (Section.title sec) in
-  let content_body = Render.render_body page in
+  let content_body = Render.render_body ~site page in
   let thumbnail_uri = Section.uri ~page ~resource:"thumbnail.jpg" sec in
   let thumbnail_2x_uri = Section.uri ~page ~resource:"thumbnail@2x.jpg" sec in
   let body =

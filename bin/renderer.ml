@@ -180,7 +180,7 @@ let render_page site sec previous_page page next_page =
                               [ El.txt (ptime_to_str (Page.date page)) ];
                             El.div
                               ~at:[ At.class' "content" ]
-                              [ El.unsafe_raw (Render.render_body page) ];
+                              [ El.unsafe_raw (Render.render_body ~site page) ];
                           ];
                         navlinks;
                       ];
